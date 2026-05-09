@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>LSL Auction Control System V3</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+color:white;
+overflow-x:hidden;
+min-height:100vh;
+position:relative;
+background:#050816;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:url("images/background.jpg") center center/cover no-repeat;
+opacity:0.18;
+z-index:-2;
+}
+
+body::after{
+content:"";
+position:fixed;
+inset:0;
+background:linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.75));
+z-index:-1;
+}
+
+header{
+padding:20px;
+text-align:center;
+}
+
+.header-content{
+position:relative;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+padding:20px;
+border-radius:24px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.1);
+overflow:hidden;
+}
+
+.header-content::before{
+content:"";
+position:absolute;
+inset:-2px;
+border-radius:24px;
+background:
+linear-gradient(
+130deg,
+gold,
+#00e5ff,
+#ff00cc,
+gold
+);
+background-size:300% 300%;
+animation:borderMove 8s linear infinite;
+filter:blur(16px);
+z-index:-1;
+}
+
+@keyframes borderMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.logo{
+height:130px;
+width:auto;
+animation:logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow{
+0%{
+filter:
+drop-shadow(0 0 10px gold)
+drop-shadow(0 0 25px rgba(255,215,0,0.5));
+}
+100%{
+filter:
+drop-shadow(0 0 25px gold)
+drop-shadow(0 0 50px rgba(255,215,0,0.8));
+}
+}
+
+.title{
+flex:1;
+font-size:42px;
+font-weight:900;
+text-transform:uppercase;
+letter-spacing:2px;
+animation:titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow{
+0%{
+text-shadow:
+0 0 8px white,
+0 0 18px #00e5ff,
+0 0 35px #ff00cc;
+}
+100%{
+text-shadow:
+0 0 15px white,
+0 0 35px #00e5ff,
+0 0 60px #ff00cc;
+}
+}
+
+.organised{
+margin-top:12px;
+font-size:18px;
+font-weight:900;
+background:linear-gradient(90deg,gold,white,gold);
+background-size:200% auto;
+-webkit-background-clip:text;
+color:transparent;
+animation:shine 3s linear infinite;
+}
+
+@keyframes shine{
+0%{background-position:-200% center;}
+100%{background-position:200% center;}
+}
+
+.live-bar{
+margin-top:15px;
+display:inline-block;
+padding:10px 20px;
+border-radius:14px;
+background:rgba(255,0,0,0.15);
+border:1px solid rgba(255,255,255,0.1);
+font-weight:900;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%{box-shadow:0 0 10px rgba(255,0,0,0.3);}
+50%{box-shadow:0 0 25px rgba(255,0,0,0.6);}
+100%{box-shadow:0 0 10px rgba(255,0,0,0.3);}
+}
+
+.top-nav{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:15px;
+margin:25px 0;
+}
+
+.top-nav button{
+padding:14px 26px;
+border:none;
+border-radius:14px;
+font-size:15px;
+font-weight:900;
+cursor:pointer;
+background:linear-gradient(145deg,gold,orange);
+transition:0.3s;
+}
+
+.top-nav button:hover{
+transform:scale(1.06);
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;
+padding:20px;
+}
+
+input,select{
+padding:12px 16px;
+border:none;
+border-radius:12px;
+font-size:14px;
+font-weight:800;
+outline:none;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:24px;
+padding:25px;
+}
+
+.card{
+position:relative;
+overflow:hidden;
+border-radius:24px;
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(15px);
+transition:0.35s;
+box-shadow:0 0 25px rgba(0,0,0,0.4);
+animation:floatCard 5s ease-in-out infinite;
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.03);
+}
+
+@keyframes floatCard{
+0%{transform:translateY(0px);}
+50%{transform:translateY(-6px);}
+100%{transform:translateY(0px);}
+}
+
+.card::before{
+content:"";
+position:absolute;
+inset:0;
+padding:2px;
+border-radius:24px;
+background:
+linear-gradient(
+130deg,
+gold,
+#ff00cc,
+#00e5ff,
+gold
+);
+background-size:300% 300%;
+animation:borderMove 6s linear infinite;
+-webkit-mask:
+linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;
+pointer-events:none;
+}
+
+.card img{
+width:100%;
+height:280px;
+object-fit:contain;
+padding:10px;
+}
+
+.card-content{
+padding:16px;
+text-align:center;
+}
+
+.card h3{
+display:inline-block;
+padding:8px 14px;
+border-radius:12px;
+font-size:15px;
+background:white;
+color:black;
+margin-bottom:10px;
+}
+
+.badge{
+display:inline-block;
+margin:5px;
+padding:7px 12px;
+border-radius:12px;
+font-size:12px;
+font-weight:900;
+background:white;
+color:black;
+}
+
+.sold-badge{
+background:linear-gradient(145deg,limegreen,green) !important;
+color:white !important;
+box-shadow:0 0 15px limegreen;
+}
+
+.price-badge{
+background:linear-gradient(145deg,gold,orange) !important;
+color:black !important;
+box-shadow:0 0 15px gold;
+}
+
+.teams-dashboard{
+width:95%;
+margin:30px auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:20px;
+}
+
+.team-box{
+position:relative;
+overflow:hidden;
+padding:20px;
+border-radius:22px;
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(12px);
+box-shadow:0 0 25px rgba(0,0,0,0.4);
+}
+
+.team-box img{
+width:110px;
+height:110px;
+object-fit:contain;
+display:block;
+margin:0 auto 15px auto;
+animation:teamGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes teamGlow{
+0%{
+filter:
+drop-shadow(0 0 10px gold)
+drop-shadow(0 0 25px rgba(255,215,0,0.5));
+}
+100%{
+filter:
+drop-shadow(0 0 20px gold)
+drop-shadow(0 0 45px rgba(255,215,0,0.9));
+}
+}
+
+.team-box h2{
+text-align:center;
+color:gold;
+margin-bottom:15px;
+}
+
+.team-stat{
+margin-top:10px;
+padding:12px;
+border-radius:12px;
+background:rgba(255,255,255,0.06);
+}
+
+#idleOverlay{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:999999;
+}
+
+#idleVideo{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+@media(max-width:768px){
+
+.header-content{
+flex-direction:column;
+}
+
+.title{
+font-size:24px;
+text-align:center;
+}
+
+.logo{
+height:90px;
+}
+
+.grid{
+grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-content">
+
+<img src="images/lsl-logo.png" class="logo">
+
+<div class="title">
+LSL Season 1 - Players List For Auction
+</div>
+
+<img src="images/community-logo.png" class="logo">
+
+</div>
+
+<div class="organised">
+Organised by Mumbai Langha Jamat
+</div>
+
+<div class="live-bar">
+🔴 LIVE AUCTION
+</div>
+
+</header>
+
+<div class="top-nav">
+
+<button onclick="showPage('playersPage')">
+Players
+</button>
+
+<button onclick="showPage('dashboardPage')">
+Dashboard
+</button>
+
+<button onclick="showPage('teamsPage')">
+Teams
+</button>
+
+</div>
+
+<div id="playersPage">
+
+<div class="controls">
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search player..."
+>
+
+<select id="roleFilter">
+
+<option value="">
+All Roles
+</option>
+
+<option>
+Batsman
+</option>
+
+<option>
+Bowler
+</option>
+
+<option>
+All Rounder
+</option>
+
+</select>
+
+<select id="locationFilter">
+
+<option value="">
+All Locations
+</option>
+
+<option>
+Mulund
+</option>
+
+<option>
+Malad
+</option>
+
+<option>
+Kutch
+</option>
+
+</select>
+
+</div>
+
+<div class="grid" id="playerGrid"></div>
+
+</div>
+
+<div id="dashboardPage" style="display:none;">
+<div class="teams-dashboard" id="teamsDashboard"></div>
+</div>
+
+<div id="teamsPage" style="display:none;">
+<div class="teams-dashboard" id="teamsSquads"></div>
+</div>
+
+<div id="idleOverlay">
+<video id="idleVideo" autoplay muted playsinline></video>
+</div>
+
+<script>
+
+let players = [];
+
+const teams = [
+
+{
+name:"Langha Tigers",
+logo:"images/tigers.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Lions",
+logo:"images/lions.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Bulls",
+logo:"images/bulls.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Eagles",
+logo:"images/eagles.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Panthers",
+logo:"images/panthers.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Unicorns",
+logo:"images/unicorns.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Sharks",
+logo:"images/sharks.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Wolves",
+logo:"images/wolves.png",
+purse:100000,
+used:0,
+players:[]
+}
+
+];
+
+function showPage(pageId){
+
+[
+"playersPage",
+"dashboardPage",
+"teamsPage"
+].forEach(id => {
+
+document.getElementById(id).style.display = "none";
+
+});
+
+document.getElementById(pageId).style.display = "block";
+
+}
+
+fetch("players.csv")
+
+.then(response => response.text())
+
+.then(data => {
+
+const rows =
+data.trim().split("\n").slice(1);
+
+players = rows.map(row => {
+
+const cols =
+row.split(",").map(col =>
+col.replace(/^"|"$/g,"").trim()
+);
+
+return {
+
+name: cols[0],
+age: cols[1],
+location: cols[2],
+role: cols[3],
+batting: cols[4],
+bowling: cols[5],
+category: cols[6],
+img: cols[7],
+
+sold:false,
+soldTo:"",
+soldPrice:0
+
+};
+
+});
+
+loadSoldPlayers();
+
+});
+
+function loadSoldPlayers(){
+
+/* RESET TEAMS */
+teams.forEach(team => {
+
+team.players = [];
+
+team.used = 0;
+
+team.purse = 100000;
+
+});
+
+/* RESET PLAYER SOLD STATUS */
+players.forEach(player => {
+
+player.sold = false;
+
+player.soldTo = "";
+
+player.soldPrice = 0;
+
+});
+
+fetch("sold_players.csv")
+
+.then(response => response.text())
+
+.then(data => {
+
+/* FIX WINDOWS CSV */
+data = data.replace(/\r/g, "");
+
+const rows = data.trim().split("\n").slice(1);
+
+rows.forEach(row => {
+
+const cols = row.split(",").map(c =>
+c.replace(/^"|"$/g, "").trim()
+);
+
+/* CSV STRUCTURE */
+
+const playerName = cols[0]?.trim();
+
+const auctionStatus = cols[6]?.trim().toLowerCase();
+
+const soldPrice = parseInt(cols[7]) || 0;
+
+const teamName = cols[8]?.trim();
+
+/* ONLY SOLD PLAYERS */
+
+if(auctionStatus !== "sold"){
+return;
+}
+
+/* FIND PLAYER */
+
+const player = players.find(
+p =>
+p.name.trim().toLowerCase()
+===
+playerName.trim().toLowerCase()
+);
+
+/* FIND TEAM */
+
+const team = teams.find(
+t =>
+t.name.trim().toLowerCase()
+===
+teamName.trim().toLowerCase()
+);
+
+/* DEBUG */
+
+console.log(
+"PLAYER:",
+playerName,
+"| TEAM:",
+teamName,
+"| FOUND:",
+!!player,
+!!team
+);
+
+/* UPDATE */
+
+if(player && team){
+
+player.sold = true;
+
+player.soldTo = team.name;
+
+player.soldPrice = soldPrice;
+
+/* PREVENT DUPLICATES */
+
+const alreadyExists =
+team.players.some(
+tp => tp.name === player.name
+);
+
+if(!alreadyExists){
+
+team.players.push(player);
+
+team.used += soldPrice;
+
+team.purse -= soldPrice;
+
+}
+
+}
+
+});
+
+/* REFRESH UI */
+
+renderPlayers(players);
+
+loadDashboard();
+
+loadTeamsPage();
+
+})
+
+.catch(error => {
+
+console.error(
+"Error loading sold_players.csv:",
+error
+);
+
+});
+
+}
+
+function renderPlayers(list){
+
+const grid =
+document.getElementById("playerGrid");
+
+grid.innerHTML = "";
+
+list.forEach(player => {
+
+const card =
+document.createElement("div");
+
+card.className = "card";
+
+card.innerHTML = `
+
+<img
+src="${player.img}"
+onerror="this.src='https://via.placeholder.com/250x300?text=No+Image'"
+>
+
+<div class="card-content">
+
+<h3>${player.name}</h3>
+
+<div class="badge">
+🏏 ${player.role}
+</div>
+
+<div class="badge">
+📍 ${player.location}
+</div>
+
+<div class="badge">
+🎂 ${player.age}
+</div>
+
+<div class="badge">
+⭐ ${player.category}
+</div>
+
+${
+player.sold
+
+?
+
+`
+
+<div class="badge sold-badge">
+🔥 SOLD → ${player.soldTo}
+</div>
+
+<div class="badge price-badge">
+💰 ₹${player.soldPrice}
+</div>
+
+`
+
+:
+
+""
+
+}
+
+</div>
+
+`;
+
+grid.appendChild(card);
+
+});
+
+}
+
+function loadDashboard(){
+
+const dashboard =
+document.getElementById("teamsDashboard");
+
+dashboard.innerHTML = "";
+
+teams.forEach(team => {
+
+dashboard.innerHTML += `
+
+<div class="team-box">
+
+<img
+src="${team.logo}"
+onerror="this.style.display='none'"
+>
+
+<h2>${team.name}</h2>
+
+<div class="team-stat">
+💰 Remaining Purse: ₹${team.purse}
+</div>
+
+<div class="team-stat">
+💸 Used Purse: ₹${team.used}
+</div>
+
+<div class="team-stat">
+👥 Players: ${team.players.length}
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+function loadTeamsPage(){
+
+const squads =
+document.getElementById("teamsSquads");
+
+squads.innerHTML = "";
+
+teams.forEach(team => {
+
+squads.innerHTML += `
+
+<div class="team-box">
+
+<img
+src="${team.logo}"
+onerror="this.style.display='none'"
+>
+
+<h2>${team.name}</h2>
+
+<div class="team-stat">
+
+${
+
+team.players.length
+
+?
+
+team.players.map(player => `
+
+<div style="margin-bottom:12px;">
+
+🏏 ${player.name}
+
+<br>
+
+💰 ₹${player.soldPrice}
+
+</div>
+
+`).join("")
+
+:
+
+"No Players Yet"
+
+}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+function filterPlayers(){
+
+const search =
+document.getElementById("searchInput")
+.value
+.toLowerCase();
+
+const role =
+document.getElementById("roleFilter")
+.value;
+
+const location =
+document.getElementById("locationFilter")
+.value;
+
+const filtered =
+players.filter(player => {
+
+return (
+
+player.name.toLowerCase().includes(search)
+
+&&
+
+(
+role === ""
+||
+player.role === role
+)
+
+&&
+
+(
+location === ""
+||
+player.location === location
+)
+
+);
+
+});
+
+renderPlayers(filtered);
+
+}
+
+document
+.getElementById("searchInput")
+.addEventListener("input",filterPlayers);
+
+document
+.getElementById("roleFilter")
+.addEventListener("change",filterPlayers);
+
+document
+.getElementById("locationFilter")
+.addEventListener("change",filterPlayers);
+
+/* IDLE VIDEO */
+
+let idleTimer;
+
+const idleOverlay =
+document.getElementById("idleOverlay");
+
+const idleVideo =
+document.getElementById("idleVideo");
+
+const idleVideos = [
+
+"videos/team1.mp4",
+"videos/team2.mp4"
+
+];
+
+let currentVideo = 0;
+
+function startIdleMode(){
+
+idleOverlay.style.display = "flex";
+
+playNextVideo();
+
+}
+
+function stopIdleMode(){
+
+idleOverlay.style.display = "none";
+
+idleVideo.pause();
+
+idleVideo.currentTime = 0;
+
+}
+
+function playNextVideo(){
+
+idleVideo.src =
+idleVideos[currentVideo];
+
+idleVideo.play();
+
+currentVideo =
+(currentVideo + 1)
+%
+idleVideos.length;
+
+idleVideo.onended = () => {
+
+setTimeout(() => {
+
+playNextVideo();
+
+},3000);
+
+};
+
+}
+
+function resetIdleTimer(){
+
+clearTimeout(idleTimer);
+
+stopIdleMode();
+
+idleTimer =
+setTimeout(startIdleMode,30000);
+
+}
+
+[
+"mousemove",
+"mousedown",
+"keypress",
+"touchstart",
+"scroll"
+].forEach(event => {
+
+document.addEventListener(
+event,
+resetIdleTimer
+);
+
+});
+
+resetIdleTimer();
+
+</script>
+
+</body>
+</html>

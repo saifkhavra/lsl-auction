@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>LSL Season 1 Auction</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  overflow-x:hidden;
+  min-height:100vh;
+  position:relative;
+}
+
+
+/* LIVE BAR */
+
+.live-bar{
+
+  margin:18px auto;
+
+  width:max-content;
+
+  padding:10px 20px;
+
+  border-radius:14px;
+
+  background:
+  linear-gradient(
+    90deg,
+    rgba(255,0,0,0.2),
+    rgba(255,255,255,0.08)
+  );
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  font-weight:800;
+
+  letter-spacing:1px;
+
+  animation:livePulse 2s infinite;
+}
+
+@keyframes livePulse{
+
+  0%{
+    box-shadow:0 0 10px rgba(255,0,0,0.2);
+  }
+
+  50%{
+    box-shadow:0 0 24px rgba(255,0,0,0.4);
+  }
+
+  100%{
+    box-shadow:0 0 10px rgba(255,0,0,0.2);
+  }
+}
+
+/* PARTICLES */
+
+.particles{
+
+  position:fixed;
+
+  inset:0;
+
+  pointer-events:none;
+
+  background-image:
+  radial-gradient(
+    rgba(255,255,255,0.35) 1px,
+    transparent 1px
+  );
+
+  background-size:40px 40px;
+
+  opacity:0.18;
+
+  animation:particleMove 25s linear infinite;
+
+  z-index:-1;
+}
+
+@keyframes particleMove{
+
+  from{
+    transform:translateY(0px);
+  }
+
+  to{
+    transform:translateY(-200px);
+  }
+}
+
+/* BACKGROUND */
+
+body::before{
+
+  content:"";
+
+  position:fixed;
+
+  top:0;
+  left:0;
+
+  width:100%;
+  height:100%;
+
+  background:
+  url("Images/background.jpg")
+  center center / cover no-repeat;
+
+  opacity:0.22;
+
+  z-index:-2;
+
+  filter:
+  blur(1px)
+  brightness(1);
+
+  transform:scale(1.02);
+}
+
+body::after{
+
+  content:"";
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+
+  linear-gradient(
+    rgba(0,0,0,0.55),
+    rgba(0,0,0,0.72)
+  );
+
+  z-index:-1;
+}
+
+body .stadium-lights{
+
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+
+  background:
+
+  radial-gradient(circle at 20% 0%, rgba(0,191,255,0.12), transparent 30%),
+
+  radial-gradient(circle at 80% 0%, rgba(138,43,226,0.14), transparent 30%),
+
+  radial-gradient(circle at 50% 100%, rgba(255,215,0,0.08), transparent 35%);
+
+  animation:lightsMove 10s ease-in-out infinite alternate;
+
+  z-index:-1;
+}
+
+@keyframes lightsMove{
+
+  0%{
+    transform:translateY(0px);
+  }
+
+  100%{
+    transform:translateY(-20px);
+  }
+}
+
+
+/* HEADER */
+
+header{
+  padding:20px;
+  text-align:center;
+}
+
+.header-content{
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:20px;
+
+  padding:18px 25px;
+
+  border-radius:24px;
+
+  background:
+  rgba(255,255,255,0.04);
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter:blur(14px);
+
+  box-shadow:
+  0 0 30px rgba(0,0,0,0.35);
+}
+
+.logo{
+
+  height:140px;
+
+  width:auto;
+
+  filter:
+  drop-shadow(0 0 18px gold)
+  drop-shadow(0 0 30px rgba(255,215,0,0.7));
+
+  transition:0.35s ease;
+}
+
+.logo:hover{
+
+  transform:
+  scale(1.08)
+  rotate(-1deg);
+}
+
+.logo:hover{
+  transform:scale(1.06);
+}
+
+.title{
+
+  position:relative;
+
+  flex:1;
+
+  font-size:38px;
+
+  font-weight:900;
+
+  letter-spacing:2px;
+
+  color:white;
+
+  text-transform:uppercase;
+
+  overflow:hidden;
+
+  text-shadow:
+
+    0 0 10px rgba(255,255,255,0.9),
+
+    0 0 20px rgba(0,191,255,0.8),
+
+    0 0 40px rgba(138,43,226,0.7),
+
+    0 0 70px rgba(255,255,255,0.45);
+
+  animation:electricGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes electricGlow{
+
+  0%{
+
+    text-shadow:
+
+      0 0 8px rgba(255,255,255,0.8),
+
+      0 0 18px rgba(0,191,255,0.7),
+
+      0 0 35px rgba(138,43,226,0.6);
+  }
+
+  50%{
+
+    text-shadow:
+
+      0 0 14px rgba(255,255,255,1),
+
+      0 0 28px rgba(0,191,255,1),
+
+      0 0 55px rgba(138,43,226,0.9),
+
+      0 0 85px rgba(255,255,255,0.5);
+  }
+
+  100%{
+
+    text-shadow:
+
+      0 0 10px rgba(255,255,255,0.9),
+
+      0 0 22px rgba(0,191,255,0.85),
+
+      0 0 45px rgba(138,43,226,0.75);
+  }
+}
+
+.title::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:-120%;
+
+  width:60%;
+  height:100%;
+
+  background:
+  linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.8),
+    transparent
+  );
+
+  transform:skewX(-25deg);
+
+  animation:spotlightSweep 4s linear infinite;
+}
+
+@keyframes spotlightSweep{
+
+  0%{
+    left:-120%;
+  }
+
+  100%{
+    left:150%;
+  }
+}
+
+
+/* ORGANISED */
+
+.organised{
+  margin-top:10px;
+
+  font-size:18px;
+  font-weight:900;
+
+  background:
+  linear-gradient(
+    90deg,
+    gold,
+    white,
+    gold
+  );
+
+  background-size:200% auto;
+
+  -webkit-background-clip:text;
+  color:transparent;
+
+  -webkit-text-stroke:0.7px black;
+
+  animation:shimmer 3s linear infinite;
+}
+
+@keyframes shimmer{
+  0%{
+    background-position:-200% center;
+  }
+
+  100%{
+    background-position:200% center;
+  }
+}
+
+/* FILTERS */
+
+.controls{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:12px;
+
+  padding:20px;
+}
+
+input,
+select{
+
+  padding:12px 16px;
+
+  border:none;
+  border-radius:14px;
+
+  font-size:14px;
+  font-weight:800;
+
+  background:rgba(255,255,255,0.95);
+
+  color:black;
+
+  outline:none;
+
+  box-shadow:
+  0 0 12px rgba(0,0,0,0.3);
+}
+
+input::placeholder{
+  color:black;
+}
+
+/* GRID */
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fill,minmax(260px,1fr));
+
+  gap:28px;
+
+  padding:30px;
+}
+
+/* CARD */
+
+.card{
+
+  position:relative;
+
+  overflow:hidden;
+
+  border-radius:24px;
+
+  background:
+  linear-gradient(
+    145deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.03)
+  );
+
+  backdrop-filter:blur(14px);
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  cursor:pointer;
+
+  transition:0.4s ease;
+
+  box-shadow:
+  0 0 25px rgba(0,0,0,0.4);
+
+  animation:glowPulse 4s infinite ease-in-out;
+}
+
+.card::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  width:100%;
+  height:5px;
+
+  background:
+  linear-gradient(
+    90deg,
+    gold,
+    #ff0080,
+    #7928ca,
+    #2af598
+  );
+
+  z-index:3;
+}
+
+.card:hover{
+
+  transform:
+  translateY(-12px)
+  scale(1.04);
+
+  box-shadow:
+
+  0 0 30px rgba(255,215,0,0.25),
+
+  0 0 60px rgba(138,43,226,0.2),
+
+  0 0 100px rgba(0,191,255,0.15);
+}
+@keyframes glowPulse{
+
+  0%{
+    box-shadow:
+    0 0 18px rgba(255,255,255,0.06);
+  }
+
+  50%{
+    box-shadow:
+    0 0 30px rgba(255,215,0,0.18);
+  }
+
+  100%{
+    box-shadow:
+    0 0 18px rgba(255,255,255,0.06);
+  }
+}
+
+/* PLAYER IMAGE */
+
+.card img{
+
+  width:100%;
+  height:280px;
+
+  object-fit:contain;
+  object-position:center top;
+
+  padding:8px;
+
+  background:
+  radial-gradient(
+    circle at top,
+    rgba(255,255,255,0.08),
+    rgba(0,0,0,0.4)
+  );
+
+  transition:0.4s ease;
+}
+
+.card:hover img{
+  transform:scale(1.03);
+filter:
+brightness(1.08)
+contrast(1.05)
+saturate(1.1);
+
+
+}
+
+
+
+/* CARD CONTENT */
+
+.card-content{
+  padding:16px;
+  text-align:center;
+}
+
+/* PLAYER NAME */
+
+.card h3{
+
+  display:inline-block;
+
+  margin-bottom:10px;
+
+  padding:8px 14px;
+
+  font-size:15px;
+  font-weight:900;
+
+  color:black;
+
+  background:
+  linear-gradient(
+    145deg,
+    #ffffff,
+    #d9d9d9
+  );
+
+  border-radius:12px;
+
+  animation:nameFloat 4s ease-in-out infinite;
+}
+
+@keyframes nameFloat{
+
+  0%{
+    transform:translateY(0px);
+  }
+
+  50%{
+    transform:translateY(-3px);
+  }
+
+  100%{
+    transform:translateY(0px);
+  }
+}
+
+.card::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  border-radius:24px;
+
+  padding:1px;
+
+  background:
+  linear-gradient(
+    145deg,
+    rgba(255,215,0,0.35),
+    rgba(138,43,226,0.25),
+    rgba(0,191,255,0.2)
+  );
+
+  -webkit-mask:
+  linear-gradient(#fff 0 0) content-box,
+  linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite:xor;
+
+  pointer-events:none;
+}
+
+
+/* BADGES */
+
+.badge{
+
+  display:inline-block;
+
+  margin:5px;
+
+  padding:7px 12px;
+
+  font-size:12px;
+  font-weight:800;
+
+  color:black;
+
+  background:
+  linear-gradient(
+    145deg,
+    rgba(255,255,255,0.96),
+    rgba(235,235,235,0.95)
+  );
+
+  border-radius:12px;
+
+  transition:0.3s;
+}
+
+.badge:hover{
+  transform:scale(1.08);
+}
+
+/* MODAL */
+
+.modal{
+
+  display:none;
+
+  position:fixed;
+
+  inset:0;
+
+  background:rgba(0,0,0,0.88);
+
+  justify-content:center;
+  align-items:center;
+
+  z-index:9999;
+
+  padding:25px;
+}
+
+/* MODAL BOX */
+
+.modal-content{
+
+  width:950px;
+  max-width:95%;
+
+  display:flex;
+
+  overflow:hidden;
+
+  border-radius:28px;
+
+  background:
+  linear-gradient(
+    145deg,
+    rgba(8,12,28,0.98),
+    rgba(3,5,14,0.98)
+  );
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+  0 0 60px rgba(0,0,0,0.8);
+
+  animation:modalOpen 0.35s ease;
+}
+
+.modal-content{
+
+  background-image:
+
+  radial-gradient(
+    circle at top right,
+    rgba(255,215,0,0.08),
+    transparent 25%
+  ),
+
+  radial-gradient(
+    circle at bottom left,
+    rgba(138,43,226,0.12),
+    transparent 30%
+  );
+}
+
+@keyframes modalOpen{
+
+  from{
+    transform:scale(0.92);
+    opacity:0;
+  }
+
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+/* LEFT SIDE */
+
+.modal-left{
+
+  width:42%;
+
+  background:
+  radial-gradient(
+    circle at top,
+    rgba(255,255,255,0.08),
+    rgba(0,0,0,0.5)
+  );
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding:20px;
+}
+
+.modal-left img{
+
+  width:100%;
+  max-height:550px;
+
+  object-fit:contain;
+
+  border-radius:20px;
+}
+
+/* RIGHT SIDE */
+
+.modal-right{
+
+  width:58%;
+
+  padding:35px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.modal-right h2{
+
+  font-size:38px;
+  font-weight:900;
+
+  margin-bottom:20px;
+
+  background:
+  linear-gradient(
+    90deg,
+    gold,
+    white
+  );
+
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+/* PLAYER DETAILS */
+
+.player-detail{
+
+  margin:10px 0;
+
+  padding:14px 16px;
+
+  border-radius:14px;
+
+  background:
+  rgba(255,255,255,0.06);
+
+  border:
+  1px solid rgba(255,255,255,0.08);
+
+  font-size:17px;
+  font-weight:600;
+}
+
+.player-detail b{
+  color:gold;
+}
+
+/* BUTTON */
+
+.close-btn{
+
+  margin-top:22px;
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:14px;
+
+  font-size:16px;
+  font-weight:900;
+
+  cursor:pointer;
+
+  background:
+  linear-gradient(
+    90deg,
+    gold,
+    orange
+  );
+
+  color:black;
+
+  transition:0.3s;
+}
+
+.close-btn:hover{
+  transform:scale(1.03);
+}
+
+/* MOBILE */
+
+
+/* =========================
+   IDLE VIDEO MODE
+========================= */
+
+#idleOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  display:none;
+
+  justify-content:center;
+  align-items:center;
+
+  background:
+  radial-gradient(
+    circle at center,
+    rgba(10,10,20,0.95),
+    rgba(0,0,0,1)
+  );
+
+  backdrop-filter:blur(10px);
+
+  z-index:999999;
+
+  opacity:0;
+
+  transition:0.5s ease;
+}
+
+/* VIDEO */
+
+#idleVideo{
+
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  background:black;
+}
+
+@media(max-width:768px){
+
+  .modal-content{
+    flex-direction:column;
+  }
+
+  .modal-left,
+  .modal-right{
+    width:100%;
+  }
+
+  .modal-left img{
+    max-height:320px;
+  }
+
+  .title{
+    font-size:24px;
+  }
+
+  .header-content{
+    flex-direction:column;
+  }
+}
+
+@media(min-width:1600px){
+
+  .grid{
+
+    grid-template-columns:
+    repeat(auto-fill,minmax(320px,1fr));
+
+    gap:34px;
+  }
+
+  .title{
+    font-size:52px;
+  }
+
+  .card img{
+    height:340px;
+  }
+}
+
+/* BEGINNER */
+
+.category-beginner{
+
+  background:
+  linear-gradient(
+    145deg,
+    #4ade80,
+    #22c55e
+  ) !important;
+
+  color:white !important;
+}
+
+/* MODERATE */
+
+.category-moderate{
+
+  background:
+  linear-gradient(
+    145deg,
+    #facc15,
+    #eab308
+  ) !important;
+
+  color:black !important;
+}
+
+/* EXPERT */
+
+.category-expert{
+
+  background:
+  linear-gradient(
+    145deg,
+    #ef4444,
+    #dc2626
+  ) !important;
+
+  color:white !important;
+}
+
+/* BASE PRICE */
+
+.price-badge{
+
+  background:
+  linear-gradient(
+    145deg,
+    gold,
+    orange
+  ) !important;
+
+  color:black !important;
+
+  font-weight:900;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+
+<div class="header-content">
+
+
+<img
+src="images/lsl-logo.png"
+class="logo"
+>
+
+<div class="title">
+LSL Season 1 - Players List for Auction
+</div>
+
+<img
+src="images/community-logo.png"
+class="logo"
+>
+
+</div>
+
+<div class="organised">
+Organised by Mumbai Langha Jamat
+</div>
+
+<div class="live-bar">
+  🔴 LIVE AUCTION
+</div>
+
+
+
+</header>
+
+<!-- FILTERS -->
+
+<div class="controls">
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search player..."
+>
+
+<select id="roleFilter">
+
+<option value="">
+All Roles
+</option>
+
+<option>
+Batsman
+</option>
+
+<option>
+Bowler
+</option>
+
+<option>
+All Rounder
+</option>
+
+</select>
+
+<select id="locationFilter">
+
+<option value="">
+All Locations
+</option>
+
+<option>
+Mulund
+</option>
+
+<option>
+Malad
+</option>
+
+<option>
+Kutch
+</option>
+
+</select>
+
+</div>
+
+<!-- PLAYER GRID -->
+
+<div
+class="grid"
+id="playerGrid"
+></div>
+
+<!-- MODAL -->
+
+<div
+class="modal"
+id="modal"
+>
+
+<div
+class="modal-content"
+id="modalContent"
+></div>
+
+</div>
+
+<!-- IDLE VIDEO MODE -->
+
+<div id="idleOverlay">
+
+  <video
+    id="idleVideo"
+    autoplay
+    playsinline
+  ></video>
+
+</div>
+
+
+<script>
+
+let players = [];
+
+fetch("players.csv")
+
+.then(response => response.text())
+
+.then(data => {
+
+  const rows =
+  data
+  .trim()
+  .split("\n")
+  .slice(1);
+
+  players = rows.map(row => {
+
+const cols = row.split(",").map(col =>
+  col.replace(/^"|"$/g, "").trim()
+);
+ return {
+
+  name: cols[0],
+  age: cols[1],
+  location: cols[2],
+  role: cols[3],
+  batting: cols[4],
+  bowling: cols[5],
+  category: cols[6],
+  basePrice: cols[7],
+  img: cols[8]
+};
+
+  });
+
+  renderPlayers(players);
+});
+
+const grid =
+document.getElementById("playerGrid");
+
+function renderPlayers(list){
+
+  grid.innerHTML = "";
+
+  list.forEach(p => {
+
+    if(!p.name) return;
+
+    const card =
+    document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <img
+      src="${p.img}"
+      onerror="this.src='https://via.placeholder.com/250'"
+      >
+
+      <div class="card-content">
+
+        <h3>${p.name}</h3>
+
+        <div class="badge">
+        ${p.role}
+        </div>
+
+        <div class="badge">
+        Age: ${p.age}
+        </div>
+
+        <div class="badge">
+        📍 ${p.location}
+        </div>
+
+<div class="badge category-${p.category.toLowerCase()}">
+🏷️ ${p.category}
+</div>
+
+<div class="badge price-badge">
+💰 Base: ₹${p.basePrice}
+</div>
+
+
+
+      </div>
+    `;
+
+    /* MODAL */
+
+    card.onclick = () => {
+
+      document
+      .getElementById("modal")
+      .style.display = "flex";
+
+      document
+      .getElementById("modalContent")
+      .innerHTML = `
+
+      <div class="modal-left">
+
+        <img
+        src="${p.img}"
+        onerror="this.src='https://via.placeholder.com/400'"
+        >
+
+      </div>
+
+      <div class="modal-right">
+
+        <h2>${p.name}</h2>
+
+        <div class="player-detail">
+          <b>Age:</b> ${p.age}
+        </div>
+
+        <div class="player-detail">
+          <b>Location:</b> ${p.location}
+        </div>
+
+        <div class="player-detail">
+          <b>Role:</b> ${p.role}
+        </div>
+
+        <div class="player-detail">
+          <b>Batting:</b> ${p.batting}
+        </div>
+
+<div class="player-detail">
+  <b>Category:</b> ${p.category}
+</div>
+
+<div class="player-detail">
+  <b>Base Price:</b> ₹${p.basePrice}
+</div>
+
+        <div class="player-detail">
+          <b>Bowling:</b> ${p.bowling}
+        </div>
+
+        <button
+        class="close-btn"
+        onclick="closeModal()"
+        >
+        Close
+        </button>
+
+      </div>
+      `;
+    };
+
+    grid.appendChild(card);
+  });
+}
+
+/* FILTERS */
+
+function filterPlayers(){
+
+  const search =
+  document
+  .getElementById("searchInput")
+  .value
+  .toLowerCase();
+
+  const role =
+  document
+  .getElementById("roleFilter")
+  .value;
+
+  const location =
+  document
+  .getElementById("locationFilter")
+  .value;
+
+  const filtered =
+  players.filter(p => {
+
+    return (
+
+      p.name
+      .toLowerCase()
+      .includes(search)
+
+      &&
+
+      (
+        role === ""
+        ||
+        p.role === role
+      )
+
+      &&
+
+      (
+        location === ""
+        ||
+        p.location === location
+      )
+    );
+  });
+
+  renderPlayers(filtered);
+}
+
+document
+.getElementById("searchInput")
+.addEventListener(
+  "input",
+  filterPlayers
+);
+
+document
+.getElementById("roleFilter")
+.addEventListener(
+  "change",
+  filterPlayers
+);
+
+document
+.getElementById("locationFilter")
+.addEventListener(
+  "change",
+  filterPlayers
+);
+
+/* CLOSE MODAL */
+
+function closeModal(){
+
+  document
+  .getElementById("modal")
+  .style.display = "none";
+}
+
+/* CLICK OUTSIDE CLOSE */
+
+window.onclick = function(event){
+
+  const modal =
+  document.getElementById("modal");
+
+  if(event.target === modal){
+
+    modal.style.display = "none";
+  }
+}
+
+/* =========================
+   VIDEO IDLE MODE
+========================= */
+
+let idleTimer;
+
+const idleOverlay =
+document.getElementById("idleOverlay");
+
+const idleVideo =
+document.getElementById("idleVideo");
+
+/* VIDEOS */
+
+const idleVideos = [
+
+  "videos/team1.mp4",
+  "videos/team2.mp4"
+];
+
+let currentVideo = 0;
+
+let videoLoop;
+
+/* START IDLE */
+
+function startIdleMode(){
+
+  console.log("IDLE MODE STARTED");
+
+  idleOverlay.style.display = "flex";
+
+  setTimeout(() => {
+
+    idleOverlay.style.opacity = "1";
+
+  }, 50);
+
+  playNextVideo();
+}
+
+/* STOP IDLE */
+
+function stopIdleMode(){
+
+  idleOverlay.style.display = "none";
+
+  idleVideo.pause();
+
+  idleVideo.currentTime = 0;
+
+  clearTimeout(videoLoop);
+}
+
+/* PLAY VIDEOS */
+
+function playNextVideo(){
+
+console.log(idleVideos[currentVideo]);
+
+  idleVideo.src =
+  idleVideos[currentVideo];
+
+  idleVideo.volume = 1;
+
+  idleVideo.muted = true;
+
+const playPromise =
+idleVideo.play();
+
+if(playPromise !== undefined){
+
+  playPromise
+  .then(() => {
+
+    console.log("Video Playing");
+
+  })
+
+  .catch(error => {
+
+    console.log("Autoplay blocked:", error);
+
+    idleVideo.muted = true;
+
+    idleVideo.play();
+  });
+}
+
+  currentVideo =
+  (currentVideo + 1)
+  %
+  idleVideos.length;
+
+  idleVideo.onended = () => {
+
+    videoLoop =
+    setTimeout(() => {
+
+      playNextVideo();
+
+    }, 3000); // 3 sec gap
+  };
+}
+
+/* RESET TIMER */
+
+function resetIdleTimer(){
+
+  clearTimeout(idleTimer);
+
+  stopIdleMode();
+
+  idleTimer =
+  setTimeout(startIdleMode, 5000);
+}
+
+/* USER ACTIVITY */
+
+[
+  "mousemove",
+  "mousedown",
+  "keypress",
+  "touchstart",
+  "scroll"
+]
+
+.forEach(event => {
+
+  document.addEventListener(
+    event,
+    resetIdleTimer
+  );
+});
+
+/* START TIMER */
+
+resetIdleTimer();
+
+
+</script>
+<div class="particles"></div>
+
+
+</body>
+</html>

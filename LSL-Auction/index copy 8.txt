@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LSL Auction Control System V3</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+color:white;
+overflow-x:hidden;
+min-height:100vh;
+position:relative;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:url("images/background.jpg") center center / cover no-repeat;
+opacity:0.22;
+z-index:-2;
+filter:blur(1px);
+}
+
+body::after{
+content:"";
+position:fixed;
+inset:0;
+background:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.72));
+z-index:-1;
+}
+
+.particles{
+position:fixed;
+inset:0;
+pointer-events:none;
+background-image:radial-gradient(rgba(255,255,255,0.35) 1px,transparent 1px);
+background-size:40px 40px;
+opacity:0.18;
+animation:particleMove 25s linear infinite;
+z-index:-1;
+}
+
+@keyframes particleMove{
+from{transform:translateY(0px);}
+to{transform:translateY(-200px);}
+}
+
+header{
+padding:20px;
+text-align:center;
+}
+
+.header-content{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:20px;
+padding:18px 25px;
+border-radius:24px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.08);
+backdrop-filter:blur(14px);
+box-shadow:0 0 30px rgba(0,0,0,0.35);
+}
+
+.header-content::before{
+
+content:"";
+
+position:absolute;
+
+inset:-2px;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+130deg,
+rgba(255,215,0,0.35),
+rgba(0,191,255,0.2),
+rgba(138,43,226,0.25)
+);
+
+filter:blur(18px);
+
+z-index:-1;
+}
+
+.header-content{
+position:relative;
+}
+
+
+.logo{
+height:140px;
+width:auto;
+filter:drop-shadow(0 0 18px gold) drop-shadow(0 0 30px rgba(255,215,0,0.7));
+transition:0.35s ease;
+}
+
+.logo:hover{
+transform:scale(1.08) rotate(-1deg);
+}
+
+.title{
+position:relative;
+flex:1;
+font-size:38px;
+font-weight:900;
+letter-spacing:2px;
+color:white;
+text-transform:uppercase;
+overflow:hidden;
+text-shadow:0 0 10px rgba(255,255,255,0.9),0 0 20px rgba(0,191,255,0.8),0 0 40px rgba(138,43,226,0.7),0 0 70px rgba(255,255,255,0.45);
+animation:electricGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes electricGlow{
+0%{text-shadow:0 0 8px rgba(255,255,255,0.8),0 0 18px rgba(0,191,255,0.7),0 0 35px rgba(138,43,226,0.6);}
+50%{text-shadow:0 0 14px rgba(255,255,255,1),0 0 28px rgba(0,191,255,1),0 0 55px rgba(138,43,226,0.9),0 0 85px rgba(255,255,255,0.5);}
+100%{text-shadow:0 0 10px rgba(255,255,255,0.9),0 0 22px rgba(0,191,255,0.85),0 0 45px rgba(138,43,226,0.75);}
+}
+
+.organised{
+margin-top:10px;
+font-size:18px;
+font-weight:900;
+background:linear-gradient(90deg,gold,white,gold);
+background-size:200% auto;
+-webkit-background-clip:text;
+color:transparent;
+animation:shimmer 3s linear infinite;
+}
+
+@keyframes shimmer{
+0%{background-position:-200% center;}
+100%{background-position:200% center;}
+}
+
+.live-bar{
+margin:18px auto;
+width:max-content;
+padding:10px 20px;
+border-radius:14px;
+background:linear-gradient(90deg,rgba(255,0,0,0.2),rgba(255,255,255,0.08));
+border:1px solid rgba(255,255,255,0.08);
+font-weight:800;
+animation:livePulse 2s infinite;
+}
+
+@keyframes livePulse{
+0%{box-shadow:0 0 10px rgba(255,0,0,0.2);}
+50%{box-shadow:0 0 24px rgba(255,0,0,0.4);}
+100%{box-shadow:0 0 10px rgba(255,0,0,0.2);}
+}
+
+.top-nav{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:18px;
+margin:25px 0;
+}
+
+.top-nav button{
+padding:14px 26px;
+border:none;
+border-radius:14px;
+font-size:16px;
+font-weight:900;
+cursor:pointer;
+background:linear-gradient(145deg,gold,orange);
+color:black;
+transition:0.3s;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:12px;
+padding:20px;
+}
+
+input,select{
+padding:12px 16px;
+border:none;
+border-radius:14px;
+font-size:14px;
+font-weight:800;
+background:rgba(255,255,255,0.95);
+color:black;
+outline:none;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:28px;
+padding:30px;
+}
+
+.card{
+
+position:relative;
+
+overflow:hidden;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+145deg,
+rgba(255,255,255,0.08),
+rgba(255,255,255,0.03)
+);
+
+backdrop-filter:blur(14px);
+
+cursor:pointer;
+
+transition:0.4s ease;
+
+box-shadow:
+0 0 25px rgba(0,0,0,0.4);
+
+animation:
+glowPulse 4s infinite ease-in-out;
+}
+
+
+.card{
+animation:
+floatCard 5s ease-in-out infinite;
+}
+
+@keyframes floatCard{
+
+0%{
+transform:translateY(0px);
+}
+
+50%{
+transform:translateY(-6px);
+}
+
+100%{
+transform:translateY(0px);
+}
+}
+
+/* Animated Border */
+
+.card::before{
+
+content:"";
+
+position:absolute;
+
+inset:0;
+
+padding:2px;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+130deg,
+gold,
+#ff00cc,
+#00e5ff,
+gold
+);
+
+background-size:300% 300%;
+
+animation:borderFlow 5s linear infinite;
+
+-webkit-mask:
+linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+
+-webkit-mask-composite:xor;
+
+pointer-events:none;
+}
+
+@keyframes borderFlow{
+
+0%{
+background-position:0% 50%;
+}
+
+50%{
+background-position:100% 50%;
+}
+
+100%{
+background-position:0% 50%;
+}
+}
+.card:hover{
+transform:translateY(-12px) scale(1.04);
+}
+
+.card img{
+width:100%;
+height:280px;
+object-fit:contain;
+object-position:center top;
+padding:8px;
+}
+
+.card-content{
+padding:16px;
+text-align:center;
+}
+
+.card h3{
+display:inline-block;
+margin-bottom:10px;
+padding:8px 14px;
+font-size:15px;
+font-weight:900;
+color:black;
+background:linear-gradient(145deg,#ffffff,#d9d9d9);
+border-radius:12px;
+}
+
+.badge{
+display:inline-block;
+margin:5px;
+padding:7px 12px;
+font-size:12px;
+font-weight:800;
+color:black;
+background:linear-gradient(145deg,rgba(255,255,255,0.96),rgba(235,235,235,0.95));
+border-radius:12px;
+}
+
+.price-badge{
+background:linear-gradient(145deg,gold,orange)!important;
+color:black!important;
+}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.88);
+justify-content:center;
+align-items:center;
+z-index:9999;
+padding:25px;
+}
+
+.modal-content{
+width:950px;
+max-width:95%;
+max-height:90vh;
+display:flex;
+overflow-y:auto;
+overflow-x:hidden;
+border-radius:28px;
+background:linear-gradient(145deg,rgba(8,12,28,0.98),rgba(3,5,14,0.98));
+}
+
+.modal-left{
+width:42%;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.modal-left img{
+width:100%;
+max-height:550px;
+object-fit:contain;
+}
+
+.modal-right{
+width:58%;
+padding:35px;
+display:flex;
+flex-direction:column;
+}
+
+.player-detail{
+margin:10px 0;
+padding:14px 16px;
+border-radius:14px;
+background:rgba(255,255,255,0.06);
+font-size:17px;
+font-weight:600;
+}
+
+.close-btn{
+margin-top:14px;
+padding:14px;
+border:none;
+border-radius:14px;
+font-size:16px;
+font-weight:900;
+cursor:pointer;
+}
+
+.teams-dashboard{
+width:95%;
+margin:30px auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:20px;
+}
+
+.team-box img{
+
+  width:110px;
+  height:110px;
+
+  object-fit:contain;
+
+  display:block;
+
+  margin:0 auto 15px auto;
+
+  filter:
+  drop-shadow(0 0 12px gold)
+  drop-shadow(0 0 24px rgba(255,215,0,0.55))
+  drop-shadow(0 0 40px rgba(138,43,226,0.35));
+
+  animation:teamLogoGlow 3s ease-in-out infinite alternate;
+
+  transition:0.35s ease;
+}
+
+.team-box img:hover{
+
+  transform:
+  scale(1.12)
+  rotate(-3deg);
+
+transition:0.35s ease;
+
+  filter:
+  drop-shadow(0 0 18px gold)
+  drop-shadow(0 0 38px rgba(255,215,0,0.75))
+  drop-shadow(0 0 55px rgba(0,191,255,0.45));
+}
+
+@keyframes teamLogoGlow{
+
+  0%{
+
+    filter:
+    drop-shadow(0 0 10px gold)
+    drop-shadow(0 0 22px rgba(255,215,0,0.45));
+  }
+
+  50%{
+
+    filter:
+    drop-shadow(0 0 18px gold)
+    drop-shadow(0 0 35px rgba(255,215,0,0.75))
+    drop-shadow(0 0 50px rgba(138,43,226,0.4));
+  }
+
+  100%{
+
+    filter:
+    drop-shadow(0 0 14px gold)
+    drop-shadow(0 0 28px rgba(255,215,0,0.6));
+  }
+}
+
+.team-box h2{
+text-align:center;
+margin-bottom:10px;
+color:gold;
+}
+
+.team-stat{
+margin-top:10px;
+padding:12px;
+border-radius:12px;
+background:rgba(255,255,255,0.05);
+}
+
+#idleOverlay{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:999999;
+opacity:0;
+transition:0.5s ease;
+}
+
+#idleVideo{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+@media(max-width:768px){
+.header-content{flex-direction:column;}
+.title{font-size:24px;text-align:center;}
+.logo{height:90px;}
+.grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));}
+.modal-content{flex-direction:column;max-height:95vh;}
+.modal-left,.modal-right{width:100%;}
+}
+
+.team-box{
+position:relative;
+overflow:hidden;
+}
+
+.team-box::after{
+
+content:"";
+
+position:absolute;
+
+top:-100%;
+
+left:-50%;
+
+width:60%;
+
+height:300%;
+
+background:
+linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.12),
+transparent
+);
+
+transform:rotate(25deg);
+
+animation:shineMove 6s linear infinite;
+}
+
+@keyframes shineMove{
+
+0%{
+left:-80%;
+}
+
+100%{
+left:160%;
+}
+}
+
+.stadium-lights{
+
+position:fixed;
+
+inset:0;
+
+pointer-events:none;
+
+background:
+
+radial-gradient(circle at 20% 0%,
+rgba(0,191,255,0.12),
+transparent 30%),
+
+radial-gradient(circle at 80% 0%,
+rgba(138,43,226,0.14),
+transparent 30%),
+
+radial-gradient(circle at 50% 100%,
+rgba(255,215,0,0.08),
+transparent 35%);
+
+animation:lightsMove 10s ease-in-out infinite alternate;
+
+z-index:-1;
+}
+
+@keyframes lightsMove{
+
+0%{
+transform:translateY(0px);
+}
+
+100%{
+transform:translateY(-20px);
+}
+}
+
+</style>
+</head>
+<body>
+
+<div class="stadium-lights"></div>
+
+<header>
+<div class="header-content">
+<img src="images/lsl-logo.png" class="logo">
+<div class="title">LSL Season 1 - Players List For Auction</div>
+<img src="images/community-logo.png" class="logo">
+</div>
+<div class="organised">Organised by Mumbai Langha Jamat</div>
+<div class="live-bar">🔴 LIVE AUCTION</div>
+</header>
+
+<div class="top-nav">
+<button onclick="showPage('playersPage')">Players</button>
+<button onclick="showPage('dashboardPage')">Dashboard</button>
+<button onclick="showPage('teamsPage')">Teams</button>
+</div>
+
+<div id="playersPage">
+<div class="controls">
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search player..."
+>
+
+<select id="roleFilter">
+
+<option value="">
+All Roles
+</option>
+
+<option>
+Batsman
+</option>
+
+<option>
+Bowler
+</option>
+
+<option>
+All Rounder
+</option>
+
+</select>
+
+<select id="locationFilter">
+
+<option value="">
+All Locations
+</option>
+
+<option>
+Mulund
+</option>
+
+<option>
+Malad
+</option>
+
+<option>
+Kutch
+</option>
+
+</select>
+
+</div><div class="grid" id="playerGrid"></div>
+</div>
+
+<div id="dashboardPage" style="display:none;">
+<div class="teams-dashboard" id="teamsDashboard"></div>
+</div>
+
+<div id="teamsPage" style="display:none;">
+<div class="teams-dashboard" id="teamsSquads"></div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content" id="modalContent"></div>
+</div>
+
+<div id="idleOverlay">
+<video id="idleVideo" autoplay playsinline></video>
+</div>
+
+<div class="particles"></div>
+
+<script>
+
+let players = [];
+let selectedPlayer = null;
+
+const teams = [
+
+{
+name:"Langha Tigers",
+logo:"images/tigers.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Lions",
+logo:"images/lions.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Bulls",
+logo:"images/bulls.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Eagles",
+logo:"images/eagles.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Panthers",
+logo:"images/panthers.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Unicorns",
+logo:"images/unicorns.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Sharks",
+logo:"images/sharks.png",
+purse:100000,
+used:0,
+players:[]
+},
+
+{
+name:"Langha Wolves",
+logo:"images/wolves.png",
+purse:100000,
+used:0,
+players:[]
+}
+
+];
+
+
+function showPage(pageId){
+["playersPage","dashboardPage","teamsPage"].forEach(id=>{
+document.getElementById(id).style.display="none";
+});
+document.getElementById(pageId).style.display="block";
+}
+
+fetch("players.csv")
+.then(response => response.text())
+.then(data => {
+
+const rows = data.trim().split("\n").slice(1);
+
+/* CLEAR PLAYERS */
+players = [];
+
+players = rows.map(row => {
+
+/* REMOVE FULL ROW QUOTES FIRST */
+row = row.replace(/^"|"$/g, "");
+
+/* SPLIT COLUMNS */
+const cols = row.split(",").map(c => c.trim());
+return {
+
+/* CSV STRUCTURE */
+name: cols[0],
+
+age: cols[1],
+
+location: cols[2],
+
+role: cols[3],
+
+batting: cols[4],
+
+bowling: cols[5],
+
+category: cols[6],
+
+/* IMAGE FROM CSV */
+img: cols[7],
+
+/* DEFAULTS */
+sold: false,
+soldTo: "",
+soldPrice: 0
+
+};
+
+});
+
+/* LOAD SOLD PLAYERS */
+loadSoldPlayers();
+
+})
+.catch(error => {
+
+console.error("Error loading players.csv:", error);
+
+});
+
+
+function renderPlayers(list){
+
+const grid = document.getElementById("playerGrid");
+
+grid.innerHTML = "";
+
+list.forEach(p => {
+
+const card = document.createElement("div");
+
+card.className = "card";
+
+card.innerHTML = `
+
+<img
+src="${p.img}"
+onerror="this.src='https://via.placeholder.com/250x280?text=No+Image'"
+>
+
+<div class="card-content">
+
+<h3>${p.name}</h3>
+
+<div class="badge">${p.role}</div>
+
+<div class="badge">📍 ${p.location}</div>
+
+<div class="badge">🎂 ${p.age}</div>
+
+${p.sold
+
+? `<div class="badge" style="background:limegreen;color:white;">
+SOLD → ${p.soldTo}
+</div>`
+
+: ""}
+
+</div>
+
+`;
+
+card.onclick = () => openPlayerModal(p);
+
+grid.appendChild(card);
+
+});
+
+}
+function loadSoldPlayers(){
+
+/* RESET TEAMS */
+teams.forEach(team => {
+
+team.players = [];
+
+team.used = 0;
+
+team.purse = 100000;
+
+});
+
+/* RESET PLAYERS */
+players.forEach(player => {
+
+player.sold = false;
+
+player.soldTo = "";
+
+player.soldPrice = 0;
+
+});
+
+fetch("sold_players.csv")
+
+.then(response => response.text())
+
+.then(data => {
+
+/* FIX WINDOWS LINE BREAKS */
+const cleanData = data.replace(/\r/g, "");
+
+/* SPLIT ROWS */
+const rows = cleanData.trim().split("\n").slice(1);
+
+rows.forEach(row => {
+
+/* SPLIT CSV */
+const cols = row.split(",").map(c => c.trim());
+
+/* CSV COLUMNS */
+const playerName = cols[0];
+
+const auctionStatus = cols[6];
+
+const soldPrice = parseInt(cols[7]) || 0;
+
+const teamName = cols[8];
+
+/* ONLY SOLD */
+if(!auctionStatus){
+return;
+}
+
+if(auctionStatus.toLowerCase() !== "sold"){
+return;
+}
+
+/* FIND PLAYER */
+const player = players.find(
+p =>
+p.name.toLowerCase().trim()
+===
+playerName.toLowerCase().trim()
+);
+
+/* FIND TEAM */
+const team = teams.find(
+t =>
+t.name.toLowerCase().trim()
+===
+teamName.toLowerCase().trim()
+);
+
+/* DEBUG */
+console.log("PLAYER:", playerName);
+console.log("TEAM:", teamName);
+console.log("FOUND PLAYER:", player);
+console.log("FOUND TEAM:", team);
+
+/* ASSIGN */
+if(player && team){
+
+player.sold = true;
+
+player.soldTo = team.name;
+
+player.soldPrice = soldPrice;
+
+/* PREVENT DUPLICATE */
+const alreadyExists = team.players.some(
+tp => tp.name === player.name
+);
+
+if(!alreadyExists){
+
+team.players.push(player);
+
+team.used += soldPrice;
+
+team.purse -= soldPrice;
+
+}
+
+}
+
+});
+
+/* REFRESH UI */
+renderPlayers(players);
+
+loadDashboard();
+
+loadTeamsPage();
+
+})
+
+.catch(error => {
+
+console.error("Error loading sold_players.csv:", error);
+
+});
+
+}
+
+function openPlayerModal(p){
+
+selectedPlayer = p;
+
+const modal = document.getElementById("modal");
+const modalContent = document.getElementById("modalContent");
+
+modal.style.display = "flex";
+
+modalContent.innerHTML = `
+<div class="modal-left">
+<img src="${p.img}" onerror="this.src='https://via.placeholder.com/400'">
+</div>
+
+<div class="modal-right">
+<h2>${p.name}</h2>
+<div class="player-detail"><b>Age:</b> ${p.age}</div>
+<div class="player-detail"><b>Location:</b> ${p.location}</div>
+<div class="player-detail"><b>Role:</b> ${p.role}</div>
+<div class="player-detail"><b>Category:</b> ${p.category}</div>
+<div class="player-detail"><b>Proficiency:</b> ${p.proficiency}</div>
+
+<div class="player-detail">
+<select id="modalTeamSelect" style="width:100%;padding:12px;border:none;border-radius:12px;">
+<option value="">Select Team</option>
+${teams.map(team => `<option value="${team.name}">${team.name}</option>`).join("")}
+</select>
+</div>
+
+<div class="player-detail">
+<input id="modalBidAmount" type="number" value="${p.basePrice}" style="width:100%;padding:12px;border:none;border-radius:12px;">
+</div>
+
+<button class="close-btn" onclick="sellPlayerFromModal()" style="background:linear-gradient(90deg,gold,orange);color:black;">🔥 SOLD</button>
+
+<button class="close-btn" onclick="unsoldPlayer()" style="background:linear-gradient(90deg,#555,#222);color:white;">UNSOLD</button>
+
+<button class="close-btn" onclick="closeModal()" style="background:linear-gradient(90deg,#444,#111);color:white;">❌ CLOSE</button>
+
+</div>`;
+}
+
+function closeModal(){
+document.getElementById("modal").style.display = "none";
+selectedPlayer = null;
+}
+
+window.onclick = function(event){
+if(event.target && event.target.id === "modal"){
+closeModal();
+}
+}
+
+
+function sellPlayerFromModal(){
+
+if(!selectedPlayer) return;
+
+const selectedTeamName =
+document.getElementById("modalTeamSelect").value;
+
+const soldAmount =
+parseInt(
+document.getElementById("modalBidAmount").value
+);
+
+if(!selectedTeamName){
+
+alert("Select Team");
+
+return;
+}
+
+const team =
+teams.find(
+t => t.name === selectedTeamName
+);
+
+if(!team){
+return;
+}
+
+/* =========================
+   PURSE CHECK
+========================= */
+
+if(team.purse < soldAmount){
+
+alert("Not enough purse");
+
+return;
+}
+
+/* =========================
+   SOLD UPDATE
+========================= */
+
+selectedPlayer.sold = true;
+
+selectedPlayer.soldTo = team.name;
+
+selectedPlayer.soldPrice = soldAmount;
+
+/* =========================
+   PREVENT DUPLICATE PLAYER
+========================= */
+
+const alreadyExists =
+team.players.some(
+p => p.name === selectedPlayer.name
+);
+
+if(!alreadyExists){
+
+team.players.push(selectedPlayer);
+
+team.used += soldAmount;
+
+team.purse -= soldAmount;
+
+}
+
+/* =========================
+   REFRESH UI
+========================= */
+
+renderPlayers(players);
+
+loadDashboard();
+
+loadTeamsPage();
+
+/* =========================
+   CONFETTI
+========================= */
+
+createConfetti();
+
+/* =========================
+   SOUND
+========================= */
+
+const hammer =
+document.getElementById("hammerSound");
+
+if(hammer){
+
+hammer.currentTime = 0;
+
+hammer.play().catch(() => {});
+
+}
+
+/* =========================
+   SUCCESS MESSAGE
+========================= */
+
+const playerName = selectedPlayer.name;
+
+setTimeout(()=>{
+
+closeModal();
+
+alert(
+`${playerName} sold to ${team.name} for ₹${soldAmount}`
+);
+
+},1000);
+
+}
+
+
+function unsoldPlayer(){
+
+if(!selectedPlayer) return;
+
+selectedPlayer.sold = false;
+selectedPlayer.soldTo = "";
+selectedPlayer.soldPrice = "";
+
+renderPlayers(players);
+loadDashboard();
+loadTeamsPage();
+
+const playerName = selectedPlayer.name;
+
+closeModal();
+
+alert(`${playerName} remains UNSOLD`);
+}
+
+function loadDashboard(){
+
+const dashboard = document.getElementById("teamsDashboard");
+dashboard.innerHTML = "";
+
+teams.forEach(team => {
+
+dashboard.innerHTML += `
+<div class="team-box">
+
+<img
+src="${team.logo}"
+onerror="this.style.display='none'"
+>
+
+<h2>${team.name}</h2>
+
+<div class="team-stat">
+💰 Remaining Purse: ₹${team.purse}
+</div>
+
+<div class="team-stat">
+💸 Used Purse: ₹${team.used}
+</div>
+
+<div class="team-stat">
+👥 Players: ${team.players.length}
+</div>
+
+</div>`;
+});
+}
+
+function loadTeamsPage(){
+
+const squads = document.getElementById("teamsSquads");
+squads.innerHTML = "";
+
+teams.forEach(team => {
+
+squads.innerHTML += `
+<div class="team-box">
+
+<img
+src="${team.logo}"
+onerror="this.style.display='none'"
+>
+
+<h2>${team.name}</h2>
+
+<div class="team-stat">
+
+${team.players.length
+
+? team.players.map(player => `
+
+<div style="margin-bottom:10px;">
+
+🏏 ${player.name}
+<br>
+💰 ₹${player.soldPrice}
+
+</div>
+
+`).join("")
+
+: "No Players Yet"}
+
+</div>
+
+</div>`;
+});
+}
+
+let idleTimer;
+const idleOverlay = document.getElementById("idleOverlay");
+const idleVideo = document.getElementById("idleVideo");
+const idleVideos = ["videos/team1.mp4","videos/team2.mp4"];
+let currentVideo = 0;
+
+function startIdleMode(){
+idleOverlay.style.display = "flex";
+setTimeout(()=>{idleOverlay.style.opacity="1";},50);
+playNextVideo();
+}
+
+function stopIdleMode(){
+idleOverlay.style.display = "none";
+idleVideo.pause();
+idleVideo.currentTime = 0;
+}
+
+function playNextVideo(){
+idleVideo.src = idleVideos[currentVideo];
+idleVideo.muted = true;
+idleVideo.play();
+currentVideo = (currentVideo + 1) % idleVideos.length;
+idleVideo.onended = ()=>{
+setTimeout(()=>{playNextVideo();},3000);
+};
+}
+
+
+
+function resetIdleTimer(){
+clearTimeout(idleTimer);
+stopIdleMode();
+idleTimer = setTimeout(startIdleMode,30000);
+}
+
+["mousemove","mousedown","keypress","touchstart","scroll"]
+.forEach(event => {
+document.addEventListener(event,resetIdleTimer);
+});
+
+function createConfetti(){
+
+for(let i = 0; i < 250; i++){
+
+const piece =
+document.createElement("div");
+
+piece.style.position = "fixed";
+
+piece.style.left =
+Math.random() * 100 + "vw";
+
+piece.style.top = "-20px";
+
+const size =
+Math.random() * 14 + 6;
+
+piece.style.width =
+size + "px";
+
+piece.style.height =
+size + "px";
+
+const colors = [
+"#FFD700",
+"#00E5FF",
+"#FF00CC",
+"#00FF88",
+"#FFFFFF",
+"#FFAA00"
+];
+
+const color =
+colors[
+Math.floor(Math.random() * colors.length)
+];
+
+piece.style.background = color;
+
+piece.style.borderRadius =
+Math.random() > 0.5
+? "50%"
+: "3px";
+
+piece.style.boxShadow = `
+0 0 12px ${color},
+0 0 24px ${color},
+0 0 40px ${color}
+`;
+
+piece.style.zIndex = "999999";
+
+piece.style.pointerEvents = "none";
+
+document.body.appendChild(piece);
+
+const xMove =
+(Math.random() - 0.5) * 900;
+
+const rotate =
+Math.random() * 1440;
+
+const duration =
+Math.random() * 4 + 3;
+
+piece.animate([
+
+{
+transform:
+`
+translateY(0px)
+translateX(0px)
+rotate(0deg)
+scale(1)
+`,
+opacity:1
+},
+
+{
+transform:
+`
+translateY(120vh)
+translateX(${xMove}px)
+rotate(${rotate}deg)
+scale(0.3)
+`,
+opacity:0
+}
+
+],{
+
+duration:
+duration * 1000,
+
+easing:
+"cubic-bezier(.12,.89,.32,1)"
+});
+
+setTimeout(()=>{
+
+piece.remove();
+
+}, duration * 1000);
+
+}
+}
+
+
+function filterPlayers(){
+
+const search =
+document
+.getElementById("searchInput")
+.value
+.toLowerCase();
+
+const role =
+document
+.getElementById("roleFilter")
+.value;
+
+const location =
+document
+.getElementById("locationFilter")
+.value;
+
+const filtered =
+players.filter(p => {
+
+return (
+
+p.name.toLowerCase().includes(search)
+
+&&
+
+(
+role === ""
+||
+p.role === role
+)
+
+&&
+
+(
+location === ""
+||
+p.location === location
+)
+
+);
+
+});
+
+renderPlayers(filtered);
+
+}
+
+/* =========================
+   FILTER EVENT LISTENERS
+========================= */
+
+document
+.getElementById("searchInput")
+.addEventListener(
+"input",
+filterPlayers
+);
+
+document
+.getElementById("roleFilter")
+.addEventListener(
+"change",
+filterPlayers
+);
+
+document
+.getElementById("locationFilter")
+.addEventListener(
+"change",
+filterPlayers
+);
+
+resetIdleTimer();
+
+
+</script>
+
+<audio id="hammerSound" src="sounds/hammer.mp3"></audio>
+
+</body>
+</html>
